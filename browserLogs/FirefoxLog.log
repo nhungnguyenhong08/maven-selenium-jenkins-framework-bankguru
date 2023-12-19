@@ -1,0 +1,23 @@
+1700894008053	geckodriver	INFO	Listening on 127.0.0.1:13611
+1700894008385	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "-no-remote" "-profile" "C:\\Users\\thaiv\\AppData\\Local\\Temp\\rust_mozprofileCs6JJW"
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1700894008638	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1700894008903	Marionette	INFO	Listening on port 50653
+Read port: 50653
+1700894009010	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+WARNING: content window passed to PrivateBrowsingUtils.isWindowPrivate. Use isContentWindowPrivate instead (but only for frame scripts).
+pbu_isWindowPrivate@resource://gre/modules/PrivateBrowsingUtils.sys.mjs:23:11
+isBrowserPrivate@resource://gre/modules/PrivateBrowsingUtils.sys.mjs:43:19
+fixupAndLoadURIString@resource://gre/modules/RemoteWebNavigation.sys.mjs:129:56
+fixupAndLoadURIString/<@chrome://global/content/elements/browser-custom-element.js:840:28
+_wrapURIChangeCall@chrome://global/content/elements/browser-custom-element.js:768:9
+fixupAndLoadURIString@chrome://global/content/elements/browser-custom-element.js:839:12
+fixupAndLoadURIString@chrome://mozapps/content/extensions/aboutaddons.js:1825:18
+render/<@chrome://mozapps/content/extensions/aboutaddons.js:1804:14
+render@chrome://mozapps/content/extensions/aboutaddons.js:1763:11
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://demo.nopcommerce.com."
+console.warn: LoginRecipes: "Falling back to a synchronous message for: https://demo.nopcommerce.com."
+1700894019147	Marionette	INFO	Stopped listening on port 50653
+Dynamically enable window occlusion 1

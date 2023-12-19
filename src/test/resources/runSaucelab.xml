@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="SauceLab - User">
+
+  <listeners>
+    <listener class-name="commons.MethodListener"></listener>
+    <listener class-name="reportConfig.AllureTestListener"/>
+    <!-- <listener class-name="reportConfig.ReportNGListener"/>-->
+    <!-- <listener class-name="org.uncommons.reportng.HTMLReporter"/>-->
+   <!--  <listener class-name="org.uncommons.reportng.JUnitXMLReporter"/>-->
+  </listeners>
+
+  <parameter name = "appUrl" value = "https://www.saucedemo.com/" />
+  <test name="Run on CHROME"> 
+  	<parameter name="browser" value ="chrome"/>
+    <classes>
+   <!--Trigger Common Register run first --> 
+     <!-- <class name="com.nopcommerce.common.Common_01_Register_Cookies"/> --> 
+      <class name="com.saucelab.user.Level_20_Sort_Asc_Desc"/>
+    </classes>
+  </test> 
+ 
+</suite> 

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="3" passed="3" failed="0" skipped="0">
+  <reporter-output>
+    <line>
+      <![CDATA[Register - Step 01: Navigate to 'Register' page<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 02: Click to radio button 'Male'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 03: Enter to Firstname textbox with value is 'Automation'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 04: Enter to Lastname textbox with value is 'FC'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 05: Select DateOfBirthDay dropdown with value is '10'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 06: Select DateOfBirthMonth dropdown with value is 'August'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 07: Select DateOfBirthYear dropdown with value is '1995'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 08: Enter to Email textbox with value is 'automationfc2888@fakemail.com'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 09: Enter to Password textbox with value is '123456'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 10: Enter to Confirm password textbox with value is '123456'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 11: Enter to 'Register' button<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 12: Verify success message is displayed<br>]]>
+    </line>
+    <line>
+      <![CDATA[Register - Step 13: Click to Logout link<br>]]>
+    </line>
+    <line>
+      <![CDATA[Login - Step 01: Navigate to Login page<br>]]>
+    </line>
+    <line>
+      <![CDATA[Login - Step 02: Enter to Email textbox with value is 'automationfc2888@fakemail.com'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Login - Step 03: Enter to Password textbox with value is '123456'<br>]]>
+    </line>
+    <line>
+      <![CDATA[Login - Step 04: Click to Login button<br>]]>
+    </line>
+    <line>
+      <![CDATA[Login - Step 05: Verify 'My Account' link is displayed<br>]]>
+    </line>
+    <line>
+      <![CDATA[Login - Step 01: Navigate to 'My Account' link<br>]]>
+    </line>
+    <line>
+      <![CDATA[Login - Step 02: Verify 'Customer Infor' link is displayed<br>]]>
+    </line>
+    <line>
+      <![CDATA[Login - Step 03: Verify 'First Name' value is correctly<br>]]>
+    </line>
+    <line>
+      <![CDATA[Login - Step 04: Verify 'Lase Name' value is correctly<br>]]>
+    </line>
+    <line>
+      <![CDATA[Login - Step 05: Verify 'Email' value is correctly<br>]]>
+    </line>
+    <line>
+      <![CDATA[OS name = windows 11<br>]]>
+    </line>
+    <line>
+      <![CDATA[Driver instance name = chromedriver: chrome on windows (0f5d0252c68ef3758a61ad50459d1b30)<br>]]>
+    </line>
+  </reporter-output>
+  <suite started-at="2023-12-17T15:39:21Z" name="NopCommerce - User" finished-at="2023-12-17T15:39:31Z" duration-ms="9605">
+    <groups>
+    </groups>
+    <test started-at="2023-12-17T15:39:21Z" name="Run on Chrome" finished-at="2023-12-17T15:39:31Z" duration-ms="9605">
+      <class name="com.nopcommerce.user.Level_22_Multiple_Environment_Owner">
+        <test-method is-config="true" signature="deleteFileInReport()[pri:0, instance:com.nopcommerce.user.Level_22_Multiple_Environment_Owner@3fde8f7c]" started-at="2023-12-17T15:39:21Z" name="deleteFileInReport" finished-at="2023-12-17T15:39:21Z" duration-ms="44" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- deleteFileInReport -->
+        <test-method is-config="true" signature="beforeClass(java.lang.String, java.lang.String)[pri:0, instance:com.nopcommerce.user.Level_22_Multiple_Environment_Owner@3fde8f7c]" started-at="2023-12-17T15:39:21Z" name="beforeClass" finished-at="2023-12-17T15:39:25Z" duration-ms="3730" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[CHROME]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA[dev]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- beforeClass -->
+        <test-method signature="User_01_Register()[pri:0, instance:com.nopcommerce.user.Level_22_Multiple_Environment_Owner@3fde8f7c]" started-at="2023-12-17T15:39:25Z" name="User_01_Register" finished-at="2023-12-17T15:39:28Z" duration-ms="2581" status="PASS">
+          <reporter-output>
+            <line>
+              <![CDATA[Register - Step 01: Navigate to 'Register' page<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 02: Click to radio button 'Male'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 03: Enter to Firstname textbox with value is 'Automation'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 04: Enter to Lastname textbox with value is 'FC'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 05: Select DateOfBirthDay dropdown with value is '10'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 06: Select DateOfBirthMonth dropdown with value is 'August'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 07: Select DateOfBirthYear dropdown with value is '1995'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 08: Enter to Email textbox with value is 'automationfc2888@fakemail.com'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 09: Enter to Password textbox with value is '123456'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 10: Enter to Confirm password textbox with value is '123456'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 11: Enter to 'Register' button<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 12: Verify success message is displayed<br>]]>
+            </line>
+            <line>
+              <![CDATA[Register - Step 13: Click to Logout link<br>]]>
+            </line>
+          </reporter-output>
+        </test-method> <!-- User_01_Register -->
+        <test-method signature="User_02_Login()[pri:0, instance:com.nopcommerce.user.Level_22_Multiple_Environment_Owner@3fde8f7c]" started-at="2023-12-17T15:39:28Z" name="User_02_Login" finished-at="2023-12-17T15:39:29Z" duration-ms="1646" status="PASS">
+          <reporter-output>
+            <line>
+              <![CDATA[Login - Step 01: Navigate to Login page<br>]]>
+            </line>
+            <line>
+              <![CDATA[Login - Step 02: Enter to Email textbox with value is 'automationfc2888@fakemail.com'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Login - Step 03: Enter to Password textbox with value is '123456'<br>]]>
+            </line>
+            <line>
+              <![CDATA[Login - Step 04: Click to Login button<br>]]>
+            </line>
+            <line>
+              <![CDATA[Login - Step 05: Verify 'My Account' link is displayed<br>]]>
+            </line>
+          </reporter-output>
+        </test-method> <!-- User_02_Login -->
+        <test-method signature="User_03_My_Account()[pri:0, instance:com.nopcommerce.user.Level_22_Multiple_Environment_Owner@3fde8f7c]" started-at="2023-12-17T15:39:29Z" name="User_03_My_Account" finished-at="2023-12-17T15:39:31Z" duration-ms="1292" status="PASS">
+          <reporter-output>
+            <line>
+              <![CDATA[Login - Step 01: Navigate to 'My Account' link<br>]]>
+            </line>
+            <line>
+              <![CDATA[Login - Step 02: Verify 'Customer Infor' link is displayed<br>]]>
+            </line>
+            <line>
+              <![CDATA[Login - Step 03: Verify 'First Name' value is correctly<br>]]>
+            </line>
+            <line>
+              <![CDATA[Login - Step 04: Verify 'Lase Name' value is correctly<br>]]>
+            </line>
+            <line>
+              <![CDATA[Login - Step 05: Verify 'Email' value is correctly<br>]]>
+            </line>
+          </reporter-output>
+        </test-method> <!-- User_03_My_Account -->
+        <test-method is-config="true" signature="afterClass()[pri:0, instance:com.nopcommerce.user.Level_22_Multiple_Environment_Owner@3fde8f7c]" started-at="2023-12-17T15:39:31Z" name="afterClass" finished-at="2023-12-17T15:39:31Z" duration-ms="284" status="PASS">
+          <reporter-output>
+            <line>
+              <![CDATA[OS name = windows 11<br>]]>
+            </line>
+            <line>
+              <![CDATA[Driver instance name = chromedriver: chrome on windows (0f5d0252c68ef3758a61ad50459d1b30)<br>]]>
+            </line>
+          </reporter-output>
+        </test-method> <!-- afterClass -->
+      </class> <!-- com.nopcommerce.user.Level_22_Multiple_Environment_Owner -->
+    </test> <!-- Run on Chrome -->
+  </suite> <!-- NopCommerce - User -->
+</testng-results>
