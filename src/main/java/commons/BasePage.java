@@ -1,9 +1,13 @@
 package commons;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
@@ -19,108 +23,192 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import pageObject.wordpress.AdminDashboardPO;
-import pageObject.wordpress.PageGeneratorManager;
-import pageObject.wordpress.UserHomePO;
-import pageObjects.nopCommerce.admin.AdminLoginPageObject;
-import pageObjects.nopCommerce.user.UserAddressPageObject;
-import pageObjects.nopCommerce.user.UserHomePageObject;
-import pageObjects.nopCommerce.user.UserMyProductReviewPageObject;
-import pageObjects.nopCommerce.user.UserRewardPointsPageObject;
-import pageUIs.jQuery.uploadFile.BasePageJQueryUI;
-import pageUIs.nopCommerce.user.BasePageNopCommerceUI;
+import io.qameta.allure.Step;
+import pageObjects.bankguru.LoginPageObject;
+import pageUIs.bankguru.BasePageBankGuruUI;
 
+/**
+ * @author Admin
+ *
+ */
 public class BasePage {
+	private WebDriver driver;
 
-	public static BasePage getBasePageObject() {
-		return new BasePage();
+	public BasePage(WebDriver driver) {
+		this.driver = driver;
 	}
 
-	public void openPageUrl(WebDriver driver, String pageUrl) {
+	/**
+	 * Opens the specified page URL.
+	 *
+	 * @param pageUrl The URL of the page to be opened.
+	 * @author ThachNk
+	 */
+	protected void openPageUrl(String pageUrl) {
 		driver.get(pageUrl);
 	}
 
-	public String getPageTitle(WebDriver driver) {
+	/**
+	 * Retrieves the title of the current page.
+	 *
+	 * @return The title of the current page.
+	 * @author ThachNk
+	 */
+	protected String getPageTitle() {
 		return driver.getTitle();
 	}
 
-	public String getPageUrl(WebDriver driver) {
+	/**
+	 * Retrieves the URL of the current page.
+	 *
+	 * @return The URL of the current page.
+	 * @author ThachNk
+	 */
+	protected String getPageUrl() {
 		return driver.getCurrentUrl();
 	}
 
-	public String getPageSource(WebDriver driver) {
+	/**
+	 * Retrieves the source code of the current page.
+	 *
+	 * @return The source code of the current page.
+	 * @author ThachNk
+	 */
+	protected String getPageSourceCode() {
 		return driver.getPageSource();
 	}
 
-	public void backToPage(WebDriver driver) {
-		driver.navigate().back();
-	}
-
-	public void forwardToPage(WebDriver driver) {
-		driver.navigate().forward();
-	}
-
-	public void refreshCurrentPage(WebDriver driver) {
+	/**
+	 * Refreshes the current page.
+	 * 
+	 * @author ThachNk
+	 */
+	protected void refreshCurrentPage() {
 		driver.navigate().refresh();
 	}
 
-	public Set<Cookie> getAllCookies(WebDriver driver) {
+	/**
+	 * Retrieves all cookies present on the current page.
+	 *
+	 * @return A set of cookies on the current page.
+	 * @author ThachNk
+	 */
+	protected Set<Cookie> getAllCookies() {
 		return driver.manage().getCookies();
 	}
 
-	public void setCookies(WebDriver driver, Set<Cookie> cookies) {
+	/**
+	 * Sets the provided cookies for the current page.
+	 *
+	 * @param cookies The set of cookies to be set.
+	 * @author ThachNk
+	 */
+	protected void setCookies(Set<Cookie> cookies) {
 		for (Cookie cookie : cookies) {
 			driver.manage().addCookie(cookie);
 		}
 		sleepInSecond(3);
 	}
 
-	public Alert waitForAlertPresence(WebDriver driver) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		return explicitWait.until(ExpectedConditions.alertIsPresent());
+	/**
+	 * Navigates back to the previous page.
+	 * 
+	 * @author ThachNk
+	 */
+	protected void backToPage() {
+		driver.navigate().back();
 	}
 
-	public void acceptAlert(WebDriver driver) {
-		waitForAlertPresence(driver).accept();
+	/**
+	 * Waits for the presence of an alert and returns the alert instance.
+	 *
+	 * @return The alert instance once present.
+	 * @author ThachNk
+	 */
+	protected Alert waitForAlertPresence() {
+		WebDriverWait explicitwait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getLongTimeOut());
+		return explicitwait.until(ExpectedConditions.alertIsPresent());
 	}
 
-	public void cancleAlert(WebDriver driver) {
-		waitForAlertPresence(driver).dismiss();
+	/**
+	 * Accepts the currently present alert.
+	 * 
+	 * @author ThachNk
+	 */
+	protected void acceptAlert() {
+		waitForAlertPresence().accept();
 	}
 
-	public String getAlertText(WebDriver driver) {
-		return waitForAlertPresence(driver).getText();
+	/**
+	 * Dismisses the currently present alert.
+	 * 
+	 * @author ThachNk
+	 */
+	protected void cancelAlert() {
+		waitForAlertPresence().dismiss();
 	}
 
-	public void sendKeyToAlert(WebDriver driver, String textValue) {
-		waitForAlertPresence(driver).sendKeys(textValue);
+	/**
+	 * Retrieves the text content of the currently present alert.
+	 *
+	 * @return The text content of the alert.
+	 * @author ThachNk
+	 */
+	protected String getlAlertText() {
+		return waitForAlertPresence().getText();
 	}
 
-	public void switchToWindowByID(WebDriver driver, String windowID) {
-		Set<String> allWindowIDs = driver.getWindowHandles();
-		for (String id : allWindowIDs) {
-			if (!id.equals(windowID)) {
+	/**
+	 * Sends keys to the currently present alert.
+	 *
+	 * @param textValue The text to be sent to the alert.
+	 * @author ThachNk
+	 */
+	protected void sendKeyTolAlert(String textValue) {
+		waitForAlertPresence().sendKeys(textValue);
+	}
+
+	/**
+	 * Switches to a window identified by its ID.
+	 *
+	 * @param windowID The ID of the window to switch to.
+	 * @author ThachNk
+	 */
+	protected void switchToWindowByID(String WindowsID) {
+		Set<String> allWindowsIDs = driver.getWindowHandles();
+		for (String id : allWindowsIDs) {
+			if (!id.equals(WindowsID)) {
 				driver.switchTo().window(id);
-				break;
 			}
 		}
 	}
 
-	public void switchToWindowByPageTitle(WebDriver driver, String expectedPageTitle) {
-		Set<String> allWindowIDs = driver.getWindowHandles();
-		for (String id : allWindowIDs) {
+	/**
+	 * Switches to a window identified by its page title.
+	 *
+	 * @param tabTitle The title of the window to switch to.
+	 * @author ThachNk
+	 */
+	protected void switchToWindowByPageTitle(String tabTitle) {
+		Set<String> allWindowsIDs = driver.getWindowHandles();
+		for (String id : allWindowsIDs) {
 			driver.switchTo().window(id);
-			String actualPageTitle = driver.getTitle();
-			if (actualPageTitle.equals(expectedPageTitle)) {
+			String actuaPageTitle = driver.getTitle();
+			if (actuaPageTitle.equals(tabTitle)) {
 				break;
-
 			}
 		}
 	}
 
-	public void closeAllWindowWithoutParent(WebDriver driver, String parentID) {
-		Set<String> allWindowIDs = driver.getWindowHandles();
-		for (String id : allWindowIDs) {
+	/**
+	 * Closes all windows except the parent window.
+	 *
+	 * @param parentID The ID of the parent window.
+	 * @author ThachNk
+	 */
+	protected void closeAllWindow_WithoutParent(String parentID) {
+		Set<String> allWindowsIDs = driver.getWindowHandles();
+		for (String id : allWindowsIDs) {
 			if (!id.equals(parentID)) {
 				driver.switchTo().window(id);
 				driver.close();
@@ -129,88 +217,266 @@ public class BasePage {
 		driver.switchTo().window(parentID);
 	}
 
-	// locatorType: id=/ css=/ xpath=/ class=/ name=
-	public By getBylocator(String locatorType) {
+	/**
+	 * Retrieves the By object based on the provided locator type and value.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return The By object corresponding to the locator type and value.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	private By getByLocator(String locatorType) {
 		By by = null;
-		if (locatorType.startsWith("id=") || locatorType.startsWith("ID=") || locatorType.startsWith("Id=")) {
-			by = By.id(locatorType.substring(3));
-		} else if (locatorType.startsWith("class=") || locatorType.startsWith("CLASS=") || locatorType.startsWith("Class=")) {
-			by = By.className(locatorType.substring(6));
-		} else if (locatorType.startsWith("name=") || locatorType.startsWith("NAME=") || locatorType.startsWith("Name=")) {
-			by = By.name(locatorType.substring(5));
-		} else if (locatorType.startsWith("css=") || locatorType.startsWith("CSS=") || locatorType.startsWith("Css=")) {
-			by = By.cssSelector(locatorType.substring(4));
-		} else if (locatorType.startsWith("xpath=") || locatorType.startsWith("XPATH=") || locatorType.startsWith("Xpath=") || locatorType.startsWith("XPath=")) {
-			by = By.xpath(locatorType.substring(6));
-		} else {
-			throw new RuntimeException("Locator type is not supported!");
+		String[] locatorParts = locatorType.split("=", 2);
+		if (locatorParts.length != 2) {
+			throw new IllegalArgumentException("Invalid locator format");
+		}
+		String typeLocator = locatorParts[0].trim().toLowerCase();
+		String locator = locatorParts[1].trim();
+
+		switch (typeLocator) {
+		case "id":
+			by = By.id(locator);
+			break;
+		case "class":
+			by = By.className(locator);
+			break;
+		case "name":
+			by = By.name(locator);
+			break;
+		case "xpath":
+			by = By.xpath(locator);
+			break;
+		case "css":
+			by = By.cssSelector(locator);
+			break;
+		default:
+			throw new IllegalArgumentException("LocatorType is not supported");
 		}
 		return by;
 	}
 
-	public String getDynamicXpath(String locatorType, String... dynamicValues) {
+	/**
+	 * Retrieves the dynamic XPath by formatting it with the provided values.
+	 *
+	 * @param locatorType The type of the locator (e.g., xpath).
+	 * @param value       The values to be used in formatting the XPath.
+	 * @return The formatted dynamic XPath.
+	 * @author ThachNk
+	 */
+	private String getDynamicXpath(String locatorType, String... value) {
 		if (locatorType.startsWith("xpath=") || locatorType.startsWith("XPATH=") || locatorType.startsWith("Xpath=") || locatorType.startsWith("XPath=")) {
-			locatorType = String.format(locatorType, (Object[]) dynamicValues);
+			locatorType = String.format(locatorType, (Object[]) value);
 		}
 		return locatorType;
 	}
 
-	public WebElement getWebElement(WebDriver driver, String locatorType) {
-		return driver.findElement(getBylocator(locatorType));
+	/**
+	 * Retrieves the WebElement based on the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return The WebElement corresponding to the locator type.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	public WebElement getWebElement(String locatorType) {
+		return driver.findElement(getByLocator(locatorType));
 	}
 
-	public List<WebElement> getListWebElement(WebDriver driver, String locatorType) {
-		return driver.findElements(getBylocator(locatorType));
+	/**
+	 * Retrieves a list of WebElements based on the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return The list of WebElements corresponding to the locator type.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected List<WebElement> getListWebElement(String locatorType) {
+		return driver.findElements(getByLocator(locatorType));
 	}
 
-	public void clickToElement(WebDriver driver, String locatorType, String... dynamicValues) {
-		getWebElement(driver, getDynamicXpath(locatorType, dynamicValues)).click();
+	/**
+	 * Clicks on the WebElement identified by the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void clickToElement(String locatorType) {
+		WebElement element = driver.findElement(getByLocator(locatorType));
+		highlightElement(locatorType);
+		if (driver.toString().contains("internet explorer")) {
+			clickToElementByJS(locatorType);
+			sleepInSecond(3);
+		} else {
+			element.click();
+		}
 	}
 
-	public void sendkeyToElement(WebDriver driver, String locatorType, String textValue) {
-		WebElement element = this.getWebElement(driver, locatorType);
+	/**
+	 * Clicks on the WebElement identified by the provided dynamic locator type.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void clickToElement(String locatorType, String... dynamicValues) {
+		WebElement element = driver.findElement(getByLocator(getDynamicXpath(locatorType, dynamicValues)));
+		highlightElement(locatorType, dynamicValues);
+		if (driver.toString().contains("internet explorer")) {
+			clickToElementByJS(locatorType, dynamicValues);
+			sleepInSecond(3);
+		} else {
+			element.click();
+		}
+	}
+
+	/**
+	 * Sends keys to the WebElement identified by the provided locator type after clearing its existing value.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @param textValue   The text value to be sent to the WebElement.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void senkeyToElement(String locatorType, String textValue) {
+		WebElement element = getWebElement(locatorType);
+		highlightElement(locatorType);
 		element.clear();
 		element.sendKeys(textValue);
 	}
 
-	public void clearValueInElementByDeleteKey(WebDriver driver, String locatorType) {
-		WebElement element = this.getWebElement(driver, locatorType);
-		element.sendKeys(Keys.chord(Keys.CONTROL), "a", Keys.DELETE);
-	}
-
-	public void sendkeyToElement(WebDriver driver, String locatorType, String textValue, String... dynamicValues) {
-		WebElement element = getWebElement(driver, getDynamicXpath(locatorType, dynamicValues));
+	/**
+	 * Sends keys to the WebElement identified by the dynamic locator type after clearing its existing value.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param textValue     The text value to be sent to the WebElement.
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void senkeyToElement(String locatorType, String textValue, String... dynamicValues) {
+		WebElement element = getWebElement(getDynamicXpath(locatorType, dynamicValues));
+		highlightElement(locatorType, dynamicValues);
 		element.clear();
 		element.sendKeys(textValue);
 	}
 
-	public void selectItemInDefaultDropdown(WebDriver driver, String locatorType, String textItem) {
-		Select select = new Select(getWebElement(driver, locatorType));
+	/**
+	 * Sends keys to the WebElement identified by the provided locator type after clearing its existing value, using the "Delete" key to clear the value.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @param textValue   The text value to be sent to the WebElement.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void senkeyToElementUserClearByDeleteKey(String locatorType, String textValue) {
+		WebElement element = getWebElement(locatorType);
+		waitForElementClickable(locatorType);
+		clickToElement(locatorType);
+		clearValueInElementByDeleteKey(locatorType);
+		element.sendKeys(textValue);
+	}
+
+	/**
+	 * Sends keys to the WebElement identified by the dynamic locator type after clearing its existing value, using the "Delete" key to clear the value.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param textValue     The text value to be sent to the WebElement.
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void senkeyToElementUserClearByDeleteKey(String locatorType, String textValue, String... dynamicValues) {
+		WebElement element = getWebElement(getDynamicXpath(locatorType, dynamicValues));
+		waitForElementClickable(getDynamicXpath(locatorType, dynamicValues));
+		clickToElement(getDynamicXpath(locatorType, dynamicValues));
+		clearValueInElementByDeleteKey(getDynamicXpath(locatorType, dynamicValues));
+		element.sendKeys(textValue);
+	}
+
+	/**
+	 * Clears the value in the WebElement identified by the provided locator type using the "Delete" key.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void clearValueInElementByDeleteKey(String locatorType) {
+		WebElement element = getWebElement(locatorType);
+		element.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.DELETE));
+	}
+
+	/**
+	 * Selects an item by visible text in the default dropdown identified by the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @param textItem    The visible text of the item to be selected.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void selectItemInDefaultDropDown(String locatorType, String textItem) {
+		Select select = new Select(getWebElement(locatorType));
 		select.selectByVisibleText(textItem);
 	}
 
-	public void selectItemInDefaultDropdown(WebDriver driver, String locatorType, String textItem, String... dynamicValues) {
-		Select select = new Select(getWebElement(driver, getDynamicXpath(locatorType, dynamicValues)));
+	/**
+	 * Selects an item by visible text in the default dropdown identified by the dynamic locator type.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param textItem      The visible text of the item to be selected.
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void selectItemInDefaultDropDown(String locatorType, String textItem, String... dynamicValues) {
+		Select select = new Select(getWebElement(getDynamicXpath(locatorType, dynamicValues)));
 		select.selectByVisibleText(textItem);
 	}
 
-	public String getSelectedItemDefaultDropdown(WebDriver driver, String locatorType) {
-		Select select = new Select(getWebElement(driver, locatorType));
+	/**
+	 * Retrieves the visible text of the first selected item in the default dropdown identified by the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return The visible text of the first selected item.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected String getSelectedItemDefaultDropdown(String locatorType) {
+		Select select = new Select(getWebElement(locatorType));
 		return select.getFirstSelectedOption().getText();
 	}
 
-	public boolean isDropdownMultiple(WebDriver driver, String locatorType) {
-		Select select = new Select(getWebElement(driver, locatorType));
+	/**
+	 * Checks if the default dropdown identified by the provided locator type allows multiple selections.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return True if the dropdown allows multiple selections, false otherwise.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected boolean isDropdownMultiple(String locatorType) {
+		Select select = new Select(getWebElement(locatorType));
 		return select.isMultiple();
 	}
 
-	public void selectItemInCustomDropdown(WebDriver driver, String parentXpath, String childXpath, String expectedTextItem) {
-		getWebElement(driver, expectedTextItem).click();
+	/**
+	 * Selects an item by visible text in a custom dropdown identified by parent and child XPath.
+	 *
+	 * @param parentXpath      The XPath of the parent element to open the custom dropdown.
+	 * @param childXpath       The XPath of the child elements within the dropdown.
+	 * @param expectedTextItem The visible text of the item to be selected.
+	 * @throws IllegalArgumentException If the XPath format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void selectItemInCustomDropdown(String parentXpath, String childXpath, String expectedTextItem) {
+		clickToElement(parentXpath);
 		sleepInSecond(1);
 
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		List<WebElement> allItems = explicitWait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(getBylocator(childXpath)));
-		for (WebElement item : allItems) {
+		WebDriverWait explicitwait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getLongTimeOut());
+		List<WebElement> speeDropdownItems = explicitwait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(getByLocator(childXpath)));
+		for (WebElement item : speeDropdownItems) {
 			if (item.getText().trim().equals(expectedTextItem)) {
 				JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 				jsExecutor.executeScript("arguments[0].scrollIntoView(true);", item);
@@ -221,95 +487,247 @@ public class BasePage {
 		}
 	}
 
-	public void sleepInSecond(long timeInSecond) {
+	/**
+	 * Pauses the execution for the specified duration in seconds.
+	 *
+	 * @param timeInSeconds The duration to pause execution in seconds.
+	 * @throws IllegalArgumentException If the provided time is negative.
+	 * @author ThachNk
+	 */
+	protected void sleepInSecond(double d) {
 		try {
-			Thread.sleep(timeInSecond * 1000); // 1000 ms = 1s
+			Thread.sleep((long) (d * 1000));
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public String getElemnetAttribute(WebDriver driver, String locatorType, String attributeName) {
-		return getWebElement(driver, locatorType).getAttribute(attributeName);
+	/**
+	 * Retrieves the value of the specified attribute of the WebElement identified by the provided locator type.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param attributeName The name of the attribute whose value is to be retrieved.
+	 * @return The value of the specified attribute.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected String getElementAttribute(String locatorType, String attributeName) {
+		return getWebElement(locatorType).getAttribute(attributeName);
 	}
 
-	public String getElemnetAttribute(WebDriver driver, String locatorType, String attributeName, String... dynamicValues) {
-		return getWebElement(driver, getDynamicXpath(locatorType, dynamicValues)).getAttribute(attributeName);
+	/**
+	 * Retrieves the value of the specified attribute of the WebElement identified by the dynamic locator type.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param attributeName The name of the attribute whose value is to be retrieved.
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @return The value of the specified attribute.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected String getElementAttribute(String locatorType, String attributeName, String... dynamicValues) {
+		return getWebElement(getDynamicXpath(locatorType, dynamicValues)).getAttribute(attributeName);
 	}
 
-	public String getElementText(WebDriver driver, String locatorType) {
-		return getWebElement(driver, locatorType).getText();
+	/**
+	 * Retrieves the visible text of the WebElement identified by the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return The visible text of the WebElement.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected String getElementText(String locatorType) {
+		return getWebElement(locatorType).getText();
 	}
 
-	public String getElementText(WebDriver driver, String locatorType, String... dynamicValues) {
-		return getWebElement(driver, getDynamicXpath(locatorType, dynamicValues)).getText();
+	/**
+	 * Retrieves the visible text of the WebElement identified by the dynamic locator type.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @return The visible text of the WebElement.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected String getElementText(String locatorType, String... dynamicValues) {
+		return getWebElement(getDynamicXpath(locatorType, dynamicValues)).getText();
 	}
 
-	public String getElemnetCssValue(WebDriver driver, String locatorType, String propertyName) {
-		return getWebElement(driver, locatorType).getCssValue(propertyName);
+	/**
+	 * Retrieves the value of the specified CSS property of the WebElement identified by the provided locator type.
+	 *
+	 * @param locatorType  The type of the locator (e.g., id, class, xpath).
+	 * @param propertyName The name of the CSS property whose value is to be retrieved.
+	 * @return The value of the specified CSS property.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected String getElementCssValue(String locatorType, String propertyName) {
+		return getWebElement(locatorType).getCssValue(propertyName);
 	}
 
-	public String getHexaColorFromRGBA(String rgbaValue) {
+	/**
+	 * Retrieves the value of the specified CSS property of the WebElement identified by the dynamic locator type.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param propertyName  The name of the CSS property whose value is to be retrieved.
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @return The value of the specified CSS property.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected String getElementCssValue(String locatorType, String propertyName, String... dynamicValues) {
+		return getWebElement(getDynamicXpath(locatorType, dynamicValues)).getCssValue(propertyName);
+	}
+
+	/**
+	 * Converts an RGBA color value to its hexadecimal representation.
+	 *
+	 * @param rgbaValue The RGBA color value to be converted.
+	 * @return The hexadecimal representation of the RGBA color value.
+	 * @throws IllegalArgumentException If the provided RGBA color value is invalid.
+	 * @author ThachNk
+	 */
+	protected String getHexaColorFromRGBA(String rgbaValue) {
 		return Color.fromString(rgbaValue).asHex();
 	}
 
-	public int getElementSize(WebDriver driver, String locatorType) {
-		return getListWebElement(driver, locatorType).size();
+	/**
+	 * Retrieves the number of WebElements identified by the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return The number of WebElements.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected int getElementSize(String locatorType) {
+		return getListWebElement(locatorType).size();
 	}
 
-	public int getElementSize(WebDriver driver, String locatorType, String... dynamicValues) {
-		return getListWebElement(driver, getDynamicXpath(locatorType, dynamicValues)).size();
+	/**
+	 * Retrieves the number of WebElements identified by the dynamic locator type.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @return The number of WebElements.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected int getElementSize(String locatorType, String... dynamicValues) {
+		return getListWebElement(getDynamicXpath(locatorType, dynamicValues)).size();
 	}
 
-	public void checkToDefaultCheckboxOrRadio(WebDriver driver, String locatorType) {
-		WebElement element = getWebElement(driver, locatorType);
+	/**
+	 * Checks a default checkbox or radio button identified by the provided locator type. If it is not already selected, it will be selected.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void checkToDefaultCheckboxOrRadio(String locatorType) {
+		WebElement element = getWebElement(locatorType);
+		highlightElement(locatorType);
 		if (!element.isSelected()) {
 			element.click();
 		}
 	}
 
-	public void checkToDefaultCheckboxOrRadio(WebDriver driver, String locatorType, String... dynamicValues) {
-		WebElement element = getWebElement(driver, getDynamicXpath(locatorType, dynamicValues));
+	/**
+	 * Checks a default checkbox or radio button identified by the dynamic locator type. If it is not already selected, it will be selected.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void checkToDefaultCheckboxOrRadio(String locatorType, String... dynamicValues) {
+		WebElement element = getWebElement(getDynamicXpath(locatorType, dynamicValues));
+		highlightElement(locatorType, dynamicValues);
 		if (!element.isSelected()) {
 			element.click();
 		}
 	}
 
-	public void uncheckToDefaultCheckboxOrRadio(WebDriver driver, String locatorType) {
-		WebElement element = getWebElement(driver, locatorType);
+	/**
+	 * Unchecks a default checkbox or radio button identified by the provided locator type. If it is already selected, it will be unselected.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void unCheckToDefaultCheckboxRadio(String locatorType) {
+		WebElement element = getWebElement(locatorType);
+		highlightElement(locatorType);
 		if (element.isSelected()) {
 			element.click();
 		}
 	}
 
-	public void uncheckToDefaultCheckboxOrRadio(WebDriver driver, String locatorType, String... dynamicValues) {
-		WebElement element = getWebElement(driver, getDynamicXpath(locatorType, dynamicValues));
+	/**
+	 * Unchecks a default checkbox or radio button identified by the dynamic locator type. If it is already selected, it will be unselected.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void unCheckToDefaultCheckboxRadio(String locatorType, String... dynamicValues) {
+		WebElement element = getWebElement(getDynamicXpath(locatorType, dynamicValues));
+		highlightElement(locatorType, dynamicValues);
 		if (element.isSelected()) {
 			element.click();
 		}
 	}
 
-	public boolean isElementEnable(WebDriver driver, String locatorType) {
-		return getWebElement(driver, locatorType).isEnabled();
-	}
-
-	public boolean isElementDisplayed(WebDriver driver, String locatorType) {
+	/**
+	 * Checks if the WebElement identified by the provided locator type is displayed.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return True if the WebElement is displayed, false otherwise.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected boolean isElementDisPlayed(String locatorType) {
+		highlightElement(locatorType);
 		try {
-			return getWebElement(driver, locatorType).isDisplayed();
-		} catch (NoSuchElementException e) {
+			return getWebElement(locatorType).isDisplayed();
+		} catch (Exception e) {
 			return false;
 		}
 	}
 
-	public boolean isElementDisplayed(WebDriver driver, String locatorType, String... dynamicValues) {
-		return getWebElement(driver, getDynamicXpath(locatorType, dynamicValues)).isDisplayed();
+	/**
+	 * Checks if the WebElement identified by the dynamic locator type is displayed.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @return True if the WebElement is displayed, false otherwise.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected boolean isElementDisPlayed(String locatorType, String... dynamicValues) {
+		highlightElement(locatorType, dynamicValues);
+		try {
+			return getWebElement(getDynamicXpath(locatorType, dynamicValues)).isDisplayed();
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
-	public boolean isElementUndisplayed(WebDriver driver, String locatorType) {
-		overrideImplicitTimeout(driver, shortTimeout);
-		List<WebElement> elements = getListWebElement(driver, locatorType);
-		overrideImplicitTimeout(driver, longTimeout);
+	/**
+	 * Checks if the WebElement identified by the provided locator type is undisplayed.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return True if the WebElement is undisplayed, false otherwise.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected boolean isElementUndisplayed(String locatorType) {
+		overrideImplicitTimeout(GlobalConstants.getGlobalConstants().getShortTimeOut());
+		List<WebElement> elements = getListWebElement(locatorType);
+		overrideImplicitTimeout(GlobalConstants.getGlobalConstants().getLongTimeOut());
+
 		if (elements.size() == 0) {
 			return true;
 		} else if (elements.size() > 0 && !elements.get(0).isDisplayed()) {
@@ -319,10 +737,20 @@ public class BasePage {
 		}
 	}
 
-	public boolean isElementUndisplayed(WebDriver driver, String locator, String... dynamicValues) {
-		overrideImplicitTimeout(driver, shortTimeout);
-		List<WebElement> elements = getListWebElement(driver, getDynamicXpath(locator, dynamicValues));
-		overrideImplicitTimeout(driver, longTimeout);
+	/**
+	 * Checks if the WebElement identified by the dynamic locator type is undisplayed.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @return True if the WebElement is undisplayed, false otherwise.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected boolean isElementUndisplayed(String locatorType, String... dynamicValues) {
+		overrideImplicitTimeout(GlobalConstants.getGlobalConstants().getShortTimeOut());
+		List<WebElement> elements = getListWebElement(getDynamicXpath(locatorType, dynamicValues));
+		overrideImplicitTimeout(GlobalConstants.getGlobalConstants().getLongTimeOut());
+
 		if (elements.size() == 0) {
 			return true;
 		} else if (elements.size() > 0 && !elements.get(0).isDisplayed()) {
@@ -332,119 +760,352 @@ public class BasePage {
 		}
 	}
 
-	public void overrideImplicitTimeout(WebDriver driver, long timeOut) {
+	/**
+	 * Overrides the implicit timeout of the WebDriver with the specified time in seconds.
+	 *
+	 * @param timeOut The new implicit timeout value in seconds.
+	 * @throws IllegalArgumentException If the provided time is negative.
+	 * @author ThachNk
+	 */
+	protected void overrideImplicitTimeout(long timeOut) {
 		driver.manage().timeouts().implicitlyWait(timeOut, TimeUnit.SECONDS);
 	}
 
-	public boolean isElementSelected(WebDriver driver, String locatorType) {
-		return getWebElement(driver, locatorType).isSelected();
+	/**
+	 * Checks if the WebElement identified by the provided locator type is enabled.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return True if the WebElement is enabled, false otherwise.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected boolean isElementEnable(String locatorType) {
+		return getWebElement(locatorType).isEnabled();
 	}
 
-	public void switchToFrame(WebDriver driver, String locatorType) {
-		driver.switchTo().frame(getWebElement(driver, locatorType));
+	/**
+	 * Checks if the WebElement identified by the provided locator type is selected.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return True if the WebElement is selected, false otherwise.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected boolean isElementSelected(String locatorType) {
+		return getWebElement(locatorType).isSelected();
 	}
 
-	public void switchToDefaultContent(WebDriver driver) {
+	/**
+	 * Checks if the WebElement identified by the dynamic locator type is selected.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @return True if the WebElement is selected, false otherwise.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected boolean isElementSelected(String locatorType, String... dynamicValues) {
+		return getWebElement(getDynamicXpath(locatorType, dynamicValues)).isSelected();
+	}
+
+	/**
+	 * Switches to the frame or iframe identified by the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void switchToFrameIframe(String locatorType) {
+		driver.switchTo().frame(getWebElement(locatorType));
+	}
+
+	/**
+	 * Switches back to the default content.
+	 *
+	 * @author ThachNk
+	 */
+	protected void switchToDefaultContent() {
 		driver.switchTo().defaultContent();
 	}
 
-	public void hoverMouseToElement(WebDriver driver, String locatorType) {
+	/**
+	 * Switches back to the Parent Frame.
+	 *
+	 * @author ThachNk
+	 */
+	protected void switchToParentFrame() {
+		driver.switchTo().parentFrame();
+	}
+
+	/**
+	 * Hovers the mouse over the WebElement identified by the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void hoverMouseToElement(String locatorType) {
 		Actions action = new Actions(driver);
-		action.moveToElement(getWebElement(driver, locatorType)).perform();
+		highlightElement(locatorType);
+		action.moveToElement(getWebElement(locatorType)).perform();
 	}
 
-	public void pressKeyToElement(WebDriver driver, String locatorType, Keys key) {
+	/**
+	 * Hovers the mouse over the WebElement identified by the dynamic locator type.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void hoverMouseToElement(String locatorType, String... dynamicValues) {
 		Actions action = new Actions(driver);
-		action.sendKeys(getWebElement(driver, locatorType), key).perform();
+		highlightElement(locatorType, dynamicValues);
+		action.moveToElement(getWebElement(getDynamicXpath(locatorType, dynamicValues))).perform();
 	}
 
-	public void pressKeyToElement(WebDriver driver, String locatorType, Keys key, String... dynamicValues) {
+	/**
+	 * Presses the specified key to the WebElement identified by the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @param key         The key to be pressed (e.g., Keys.ENTER, Keys.ARROW_UP).
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void pressKeyToElement(String locatorType, Keys key) {
 		Actions action = new Actions(driver);
-		action.sendKeys(getWebElement(driver, getDynamicXpath(locatorType, dynamicValues)), key).perform();
+		action.sendKeys(getWebElement(locatorType), key).perform();
 	}
 
-	public void scrollToBottomPage(WebDriver driver) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		jsExecutor.executeScript("window.scrollBy(0,document.body.scrollHeight)");
+	/**
+	 * Presses the specified key to the WebElement identified by the dynamic locator type.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param key           The key to be pressed (e.g., Keys.ENTER, Keys.ARROW_UP).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void pressKeyToElement(String locatorType, Keys key, String... dynamicValues) {
+		Actions action = new Actions(driver);
+		action.sendKeys(getWebElement(getDynamicXpath(locatorType, dynamicValues)), key).perform();
 	}
 
-	public void highlightElement(WebDriver driver, String locatorType) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		WebElement element = getWebElement(driver, locatorType);
+	/**
+	 * Scrolls to the bottom of the page using JavaScriptExecutor.
+	 *
+	 * @throws JavaScriptException If the execution of JavaScript fails.
+	 * @author ThachNk
+	 */
+	protected void scrollToBottomPage() {
+		((JavascriptExecutor) driver).executeScript("window.scrollBy(0,document.body.scrollHeight)");
+	}
+
+	/**
+	 * Highlights the WebElement identified by the provided locator type. The element is briefly outlined with a red dashed border.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void highlightElement(String locatorType) {
+		WebElement element = getWebElement(locatorType);
 		String originalStyle = element.getAttribute("style");
-		jsExecutor.executeScript("arguments[0].setAttribute(arguments[1], arguments[2])", element, "style", "border: 2px solid red; border-style: dashed;");
-		sleepInSecond(1);
-		jsExecutor.executeScript("arguments[0].setAttribute(arguments[1], arguments[2])", element, "style", originalStyle);
+		((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute(arguments[1], arguments[2])", element, "style", "border: 2px solid red; border-style: dashed;");
+		sleepInSecond(0.2);
+		((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute(arguments[1], arguments[2])", element, "style", originalStyle);
 	}
 
-	public void highlightElement(WebDriver driver, String locatorType, String... dynamicValues) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		WebElement element = getWebElement(driver, getDynamicXpath(locatorType, dynamicValues));
+	/**
+	 * Highlights the WebElement identified by the provided locator type. The element is briefly outlined with a red dashed border.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @author ThachNk
+	 */
+	protected void highlightElement(String locatorType, String... dynamicValues) {
+		WebElement element = getWebElement(getDynamicXpath(locatorType, dynamicValues));
 		String originalStyle = element.getAttribute("style");
-		jsExecutor.executeScript("arguments[0].setAttribute(arguments[1], arguments[2])", element, "style", "border: 2px solid red; border-style: dashed;");
-		sleepInSecond(1);
-		jsExecutor.executeScript("arguments[0].setAttribute(arguments[1], arguments[2])", element, "style", originalStyle);
+		((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute(arguments[1], arguments[2])", element, "style", "border: 2px solid red; border-style: dashed;");
+		sleepInSecond(0.2);
+		((JavascriptExecutor) driver).executeScript("arguments[0].setAttribute(arguments[1], arguments[2])", element, "style", originalStyle);
 	}
 
-	public void clickToElementByJS(WebDriver driver, String locatorType) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		jsExecutor.executeScript("arguments[0].click();", getWebElement(driver, locatorType));
+	/**
+	 * Clicks the WebElement identified by the provided locator type using JavaScriptExecutor.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @see #getWebElement(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected void clickToElementByJS(String locatorType) {
+		((JavascriptExecutor) driver).executeScript("arguments[0].click();", getWebElement(locatorType));
 	}
 
-	public void clickToElementByJS(WebDriver driver, String locatorType, String... dynamicValues) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		jsExecutor.executeScript("arguments[0].click();", getWebElement(driver, getDynamicXpath(locatorType, dynamicValues)));
+	/**
+	 * Clicks the WebElement identified by the dynamic locator type using JavaScriptExecutor.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @see #getWebElement(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected void clickToElementByJS(String locatorType, String... dynamicValues) {
+		((JavascriptExecutor) driver).executeScript("arguments[0].click();", getWebElement(getDynamicXpath(locatorType, dynamicValues)));
 	}
 
-	public void scrollToElement(WebDriver driver, String locatorType) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		jsExecutor.executeScript("arguments[0].scrollIntoView(true);", getWebElement(driver, locatorType));
+	/**
+	 * Scrolls the browser window to bring the WebElement identified by the provided locator type into view using JavaScriptExecutor.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @see #getWebElement(String)
+	 * @author ThachNk
+	 */
+	protected void scrollToElement(String locatorType) {
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", getWebElement(locatorType));
 	}
 
-	public String getElementValueByJsXpath(WebDriver driver, String xpathLocator) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		xpathLocator = xpathLocator.replace("xpath=", "");
-		return (String) jsExecutor.executeScript("return $(document.evaluate(\"" + xpathLocator + "\", documnet,null,XPathResult.FIRST_ORRDERED_NODE_TYPE, null).sigleNodeValue).val()");
+	/**
+	 * Scrolls the browser window to bring the WebElement identified by the dynamic locator type into view using JavaScriptExecutor.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @see #getWebElement(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected void scrollToElement(String locatorType, String... dynamicValues) {
+		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", getWebElement(getDynamicXpath(locatorType, dynamicValues)));
 	}
 
-	public void removeAttributeInDOM(WebDriver driver, String locatorType, String attributeRemove) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		jsExecutor.executeScript("arguments[0].removeAttribute('" + attributeRemove + "');", getWebElement(driver, locatorType));
+	/**
+	 * Gets the value of the specified attribute using JavaScriptExecutor for the WebElement identified by the provided XPath.
+	 *
+	 * @param xpathLocator The XPath locator for the WebElement.
+	 * @return The value of the attribute specified in the JavaScriptExecutor.
+	 * @throws IllegalArgumentException If the XPath locator format is invalid or not supported.
+	 * @throws JavaScriptException      If the execution of JavaScript fails.
+	 * @author ThachNk
+	 */
+	protected String getElementValueByJSXpath(String xpathLocator) {
+		JavascriptExecutor jsExcutor = (JavascriptExecutor) driver;
+		if (xpathLocator.startsWith("xpath=")) {
+			xpathLocator = xpathLocator.replace("xpath=", "");
+		}
+		return (String) jsExcutor.executeScript("return $(document.evaluate(\"" + xpathLocator + "\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue).val()");
 	}
 
-	public boolean areJQueryAndJSLoadedSuccess(WebDriver driver) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+	/**
+	 * Gets the value of the specified attribute using JavaScriptExecutor for the WebElement identified by the dynamic XPath.
+	 *
+	 * @param xpathLocator  The XPath locator for the WebElement.
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @return The value of the attribute specified in the JavaScriptExecutor.
+	 * @throws IllegalArgumentException If the XPath locator format is invalid or not supported.
+	 * @throws JavaScriptException      If the execution of JavaScript fails.
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected String getElementValueByJSXpath(String xpathLocator, String... dynamicValues) {
+		JavascriptExecutor jsExcutor = (JavascriptExecutor) driver;
+		if (getDynamicXpath(xpathLocator, dynamicValues).startsWith("xpath=")) {
+			xpathLocator = getDynamicXpath(xpathLocator, dynamicValues).replace("xpath=", "");
+		}
+		return (String) jsExcutor.executeScript("return $(document.evaluate(\"" + xpathLocator + "\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue).val()");
+	}
 
+	/**
+	 * Removes the specified attribute from the WebElement identified by the provided locator type using JavaScriptExecutor.
+	 *
+	 * @param locatorType     The type of the locator (e.g., id, class, xpath).
+	 * @param attributeRemove The attribute to be removed.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @throws JavaScriptException      If the execution of JavaScript fails.
+	 * @see #getWebElement(String)
+	 * @author ThachNk
+	 */
+	protected void removeAttributeInDOM(String locatorType, String attributeRemove) {
+		((JavascriptExecutor) driver).executeScript("arguments[0].removeAttribute('" + attributeRemove + "');", getWebElement(locatorType));
+	}
+
+	/**
+	 * Checks if jQuery and JavaScript are loaded successfully.
+	 *
+	 * @return {@code true} if jQuery and JavaScript are loaded successfully, {@code false} otherwise.
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see WebDriverWait
+	 * @see ExpectedCondition#apply(WebDriver)
+	 * @see JavascriptExecutor#executeScript(String, Object...)
+	 * @author ThachNk
+	 */
+	protected boolean areJQueryAndJSLoadedSuccess() {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getLongTimeOut());
 		ExpectedCondition<Boolean> jQueryLoad = new ExpectedCondition<Boolean>() {
 			@Override
 			public Boolean apply(WebDriver driver) {
 				try {
-					return ((Long) jsExecutor.executeScript("return jQuery.active") == 0);
+					return ((Long) ((JavascriptExecutor) driver).executeScript("return jQuery.active") == 0);
 				} catch (Exception e) {
 					return true;
 				}
 			}
 		};
-
 		ExpectedCondition<Boolean> jsLoad = new ExpectedCondition<Boolean>() {
 			@Override
 			public Boolean apply(WebDriver driver) {
-				return jsExecutor.executeScript("return document.readyState").toString().equals("complete");
+				return ((JavascriptExecutor) driver).executeScript("return document.readyState").toString().equals("complete");
 			}
 		};
-
 		return explicitWait.until(jQueryLoad) && explicitWait.until(jsLoad);
 	}
 
-	public String getElementValidationMessage(WebDriver driver, String locatorType) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		return (String) jsExecutor.executeScript("return arguments[0].validationMessage;", getWebElement(driver, locatorType));
+	/**
+	 * Gets the shadow DOM of the WebElement identified by the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return The shadow DOM of the WebElement.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @see JavascriptExecutor#executeScript(String, Object...)
+	 * @see #getWebElement(String)
+	 * @author ThachNk
+	 */
+	protected WebElement getShadowDOM(String locatorType) {
+		return (WebElement) ((JavascriptExecutor) driver).executeScript("return arguments[0].shadowRoot;", getWebElement(locatorType));
 	}
 
-	public boolean isImageLoaded(WebDriver driver, String locatorType) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		boolean status = (boolean) jsExecutor.executeScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0", getWebElement(driver, locatorType));
+	/**
+	 * Gets the validation message of the WebElement identified by the provided locator type.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return The validation message of the WebElement.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @see JavascriptExecutor#executeScript(String, Object...)
+	 * @see #getWebElement(String)
+	 * @author ThachNk
+	 */
+	protected String getElementValidationMessage(String locatorType) {
+		return (String) ((JavascriptExecutor) driver).executeScript("return arguments[0].validationMessage;", getWebElement(locatorType));
+	}
+
+	/**
+	 * Checks if the image identified by the provided locator type is loaded.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return {@code true} if the image is loaded, {@code false} otherwise.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @see JavascriptExecutor#executeScript(String, Object...)
+	 * @see #getWebElement(String)
+	 * @author ThachNk
+	 */
+	protected boolean isImageLoaded(String locatorType) {
+		boolean status = (boolean) ((JavascriptExecutor) driver).executeScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0", getWebElement(locatorType));
 		if (status) {
 			return true;
 		} else {
@@ -452,235 +1113,442 @@ public class BasePage {
 		}
 	}
 
-	public boolean isImageLoaded(WebDriver driver, String locatorType, String... dynamicValues) {
-		JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
-		boolean status = (boolean) jsExecutor.executeScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0",
-				getWebElement(driver, getDynamicXpath(locatorType, dynamicValues)));
-		return status;
+	/**
+	 * Checks if the image identified by the dynamic locator type is loaded.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @return {@code true} if the image is loaded, {@code false} otherwise.
+	 * @throws IllegalArgumentException If the locator format is invalid or not supported.
+	 * @see JavascriptExecutor#executeScript(String, Object...)
+	 * @see #getWebElement(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected boolean isImageLoaded(String locatorType, String... dynamicValues) {
+		boolean status = (boolean) ((JavascriptExecutor) driver).executeScript("return arguments[0].complete && typeof arguments[0].naturalWidth != \"undefined\" && arguments[0].naturalWidth > 0",
+				getWebElement(getDynamicXpath(locatorType, dynamicValues)));
+		if (status) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-	public void waitForElementVisible(WebDriver driver, String locatorType) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		explicitWait.until(ExpectedConditions.visibilityOfElementLocated(getBylocator(locatorType)));
+	/**
+	 * Waits for the element identified by the provided locator type to be visible.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see ExpectedCondition#apply(WebDriver)
+	 * @see #getByLocator(String)
+	 * @see #overrideImplicitTimeout(long)
+	 * @author ThachNk
+	 */
+	protected void waitForElementVisible(String locatorType) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getLongTimeOut());
+		explicitWait.until(ExpectedConditions.visibilityOfElementLocated(getByLocator(locatorType)));
+		overrideImplicitTimeout(GlobalConstants.getGlobalConstants().getLongTimeOut());
 	}
 
-	public void waitForElementVisible(WebDriver driver, String locatorType, String... dynamicValues) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		explicitWait.until(ExpectedConditions.visibilityOfElementLocated(getBylocator(getDynamicXpath(locatorType, dynamicValues))));
+	/**
+	 * Waits for the dynamic element identified by the provided locator type to be visible.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see ExpectedCondition#apply(WebDriver)
+	 * @see #getByLocator(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected void waitForElementVisible(String locatorType, String... dynamicValues) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getLongTimeOut());
+		explicitWait.until(ExpectedConditions.visibilityOfElementLocated(getByLocator(getDynamicXpath(locatorType, dynamicValues))));
 	}
 
-	public void waitForAllElementVisible(WebDriver driver, String locatorType) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		explicitWait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(getBylocator(locatorType)));
+	/**
+	 * Waits for the element identified by the provided locator type to become invisible.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see ExpectedCondition#apply(WebDriver)
+	 * @see #getByLocator(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected void waitForElementInvisible(String locatorType) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getMediumTimeOut());
+		explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(getByLocator(locatorType)));
 	}
 
-	public void waitForAllElementVisible(WebDriver driver, String locatorType, String... dynamicValues) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		explicitWait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(getBylocator(getDynamicXpath(locatorType, dynamicValues))));
+	/**
+	 * Waits for the dynamic element identified by the provided locator type to become invisible.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see ExpectedCondition#apply(WebDriver)
+	 * @see #getByLocator(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected void waitForElementInvisible(String locatorType, String... dynamicValues) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getMediumTimeOut());
+		explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(getByLocator(getDynamicXpath(locatorType, dynamicValues))));
 	}
 
-	public void waitForElementInvisible(WebDriver driver, String locatorType) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(getBylocator(locatorType)));
+	/**
+	 * Waits for all elements identified by the provided locator type to become visible.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see ExpectedCondition#apply(WebDriver)
+	 * @see #getByLocator(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected void waitForAllElementVisible(String locatorType) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getLongTimeOut());
+		explicitWait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(getByLocator(locatorType)));
 	}
 
-	// Wait for element undisplayed in DOM or not in DOM and override implicit timeout
-	public void waitForElementUndisplayed(WebDriver driver, String locatorType) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, shortTimeout);
-		overrideImplicitTimeout(driver, shortTimeout);
-		explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(getBylocator(locatorType)));
-		overrideImplicitTimeout(driver, longTimeout);
+	/**
+	 * Waits for all dynamic elements identified by the provided locator type to become visible.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see ExpectedCondition#apply(WebDriver)
+	 * @see #getByLocator(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected void waitForAllElementVisible(String locatorType, String... dynamicValues) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getLongTimeOut());
+		explicitWait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(getByLocator(getDynamicXpath(locatorType, dynamicValues))));
 	}
 
-	public void waitForElementInvisible(WebDriver driver, String locatorType, String... dynamicValues) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(getBylocator(getDynamicXpath(locatorType, dynamicValues))));
+	/**
+	 * Waits for all elements identified by the provided locator type to become invisible.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see ExpectedCondition#apply(WebDriver)
+	 * @see #getByLocator(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNkk
+	 */
+	protected void waitForAllElementInvisible(String locatorType) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getMediumTimeOut());
+		explicitWait.until(ExpectedConditions.invisibilityOfAllElements(getListWebElement(locatorType)));
 	}
 
-	public void waitForAllElementInvisible(WebDriver driver, String locatorType) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		explicitWait.until(ExpectedConditions.invisibilityOfAllElements(getListWebElement(driver, locatorType)));
+	/**
+	 * Waits for all dynamic elements identified by the provided locator type to become invisible.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see ExpectedCondition#apply(WebDriver)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNkk
+	 */
+	protected void waitForAllElementInvisible(String locatorType, String... dynamicValues) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getMediumTimeOut());
+		explicitWait.until(ExpectedConditions.invisibilityOfAllElements(getListWebElement(getDynamicXpath(locatorType, dynamicValues))));
 	}
 
-	public void waitForElementClickable(WebDriver driver, String locatorType) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		explicitWait.until(ExpectedConditions.elementToBeClickable(getBylocator(locatorType)));
+	/**
+	 * Waits for an element identified by the provided locator type to become invisible.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see #getByLocator(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @see #overrideImplicitTimeout(long)
+	 * @author ThachNk
+	 */
+	protected void waitForElementUndisplay(String locatorType) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getShortTimeOut());
+		overrideImplicitTimeout(GlobalConstants.getGlobalConstants().getShortTimeOut());
+		explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(getByLocator(locatorType)));
+		overrideImplicitTimeout(GlobalConstants.getGlobalConstants().getLongTimeOut());
 	}
 
-	public void waitForElementClickable(WebDriver driver, String locatorType, String... dynamicValues) {
-		WebDriverWait explicitWait = new WebDriverWait(driver, longTimeout);
-		explicitWait.until(ExpectedConditions.elementToBeClickable(getBylocator(getDynamicXpath(locatorType, dynamicValues))));
+	/**
+	 * Waits for a dynamic element identified by the provided locator type to become invisible.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see #getByLocator(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @see #overrideImplicitTimeout(long)
+	 * @author ThachNk
+	 */
+	protected void waitForElementUndisplay(String locatorType, String... dynamicValues) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getShortTimeOut());
+		overrideImplicitTimeout(GlobalConstants.getGlobalConstants().getShortTimeOut());
+		explicitWait.until(ExpectedConditions.invisibilityOfElementLocated(getByLocator(getDynamicXpath(locatorType, dynamicValues))));
+		overrideImplicitTimeout(GlobalConstants.getGlobalConstants().getLongTimeOut());
 	}
 
-	public void uploadMultipleFile(WebDriver driver, String... fileNames) {
-		// Đường dẫn chưa thư mục uploadFiles
-		String filePath = GlobalConstants.UPLOAD_FILE;
+	/**
+	 * Waits for an element identified by the provided locator type to become clickable.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see #getByLocator(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected void waitForElementClickable(String locatorType) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getLongTimeOut());
+		explicitWait.until(ExpectedConditions.elementToBeClickable(getByLocator(locatorType)));
+	}
+
+	/**
+	 * Waits for a dynamic element identified by the provided locator type to become clickable.
+	 *
+	 * @param locatorType   The type of the locator (e.g., id, class, xpath).
+	 * @param dynamicValues The dynamic values to be used in formatting the XPath.
+	 * @throws TimeoutException If the specified timeout is exceeded.
+	 * @see #getByLocator(String)
+	 * @see #getDynamicXpath(String, String...)
+	 * @author ThachNk
+	 */
+	protected void waitForElementClickable(String locatorType, String... dynamicValues) {
+		WebDriverWait explicitWait = new WebDriverWait(driver, GlobalConstants.getGlobalConstants().getLongTimeOut());
+		explicitWait.until(ExpectedConditions.elementToBeClickable(getByLocator(getDynamicXpath(locatorType, dynamicValues))));
+	}
+
+	/**
+	 * Uploads multiple files.
+	 *
+	 * @param fileNames The names of the files to be uploaded.
+	 * @see GlobalConstants#getGlobalConstants()
+	 * @see #getWebElement(String)
+	 * @author ThachNk
+	 */
+	protected void uploadMultipleFiles(String... fileNames) {
+		// Đường dẫn của thư muc Upload file : Windows\ Mac\ Linux
+		String filePath = GlobalConstants.getGlobalConstants().getUploadFile();
+
+		// Đường dẩn của all File
 		String fullFileName = "";
 		for (String file : fileNames) {
 			fullFileName = fullFileName + filePath + file + "\n";
 		}
 		fullFileName = fullFileName.trim();
-		getWebElement(driver, BasePageJQueryUI.UPLOAD_FILE).sendKeys(fullFileName);
-	}
-
-	// Tối ưu ở bài học Level_07_Switch_Page
-	public UserAddressPageObject openAddressPage(WebDriver driver) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.ADDRESS_LINK);
-		clickToElement(driver, BasePageNopCommerceUI.ADDRESS_LINK);
-		return PageGeneratorManagerNopCommerce.getUserAddressPage(driver);
-	}
-
-	public UserMyProductReviewPageObject openMyProductReviewPage(WebDriver driver) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.MY_PRODUCT_REVIEW_LINK);
-		clickToElement(driver, BasePageNopCommerceUI.MY_PRODUCT_REVIEW_LINK);
-		return PageGeneratorManagerNopCommerce.getUserMyProductReviewPage(driver);
-	}
-
-	public UserRewardPointsPageObject openRewardPointsPage(WebDriver driver) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.REWARD_POINTS_LINK);
-		clickToElement(driver, BasePageNopCommerceUI.REWARD_POINTS_LINK);
-		return PageGeneratorManagerNopCommerce.getUserRewardPointsPage(driver);
-	}
-
-	// Tối ưu ở bài học Level_09_Dynamic_Locator
-
-	// Chỉ dùng 1 trong 2 cách (để tránh nhầm lẫn trong quá trình viết code)
-	// Cách 1 (Có ít page)
-	public BasePage openPageAtMyAccountByName(WebDriver driver, String pageName) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.DYNAMIC_PAGES_AT_MY_ACCOUNT_AREA, pageName);
-		clickToElement(driver, BasePageNopCommerceUI.DYNAMIC_PAGES_AT_MY_ACCOUNT_AREA, pageName);
-		switch (pageName) {
-		case "Addresses":
-			return PageGeneratorManagerNopCommerce.getUserAddressPage(driver);
-		case "My product reviews":
-			return PageGeneratorManagerNopCommerce.getUserMyProductReviewPage(driver);
-		case "Reward points":
-			return PageGeneratorManagerNopCommerce.getUserRewardPointsPage(driver);
-		case "Customer info":
-			return PageGeneratorManagerNopCommerce.getUserCustomerInforPage(driver);
-		default:
-			throw new RuntimeException("Invalid page name at My Account area.");
-		}
-	}
-
-	// Pattern Object
-	// Cách 2 (có nhiều page để k phải viết switch case nhiều)
-	public void openPageAtMyAccountByPageName(WebDriver driver, String pageName) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.DYNAMIC_PAGES_AT_MY_ACCOUNT_AREA, pageName);
-		clickToElement(driver, BasePageNopCommerceUI.DYNAMIC_PAGES_AT_MY_ACCOUNT_AREA, pageName);
+		getWebElement(BasePageBankGuruUI.UPLOAD_FILE).sendKeys(fullFileName);
 	}
 
 	/**
-	 * Enter to dynamic Textbox by ID
-	 * <ul>
-	 * <li>Rest Parameter</li>
-	 * <li>Textbox by ID</li>
-	 * </ul>
-	 * 
-	 * @author nhungnth
+	 * Checks if all items have text names sorted in ascending order.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return True if the items are sorted in ascending order; false otherwise.
+	 * @see #sleepInSecond(long)
+	 * @see #getListWebElement(String)
+	 * @author ThachNk
+	 */
+	protected boolean isAllItemHaveTextNameSortByAscending(String locatorType) {
+		sleepInSecond(3);
+		List<WebElement> elementLists = getListWebElement(locatorType);
+		List<String> names = elementLists.stream().map(n -> n.getText()).collect(Collectors.toList());
+		List<String> sortedNames = new ArrayList<String>(names);
+		Collections.sort(sortedNames);
+		System.out.println("Sorted list (sortedNames): " + sortedNames);
+		return names.equals(sortedNames);
+	}
+
+	/**
+	 * Checks if all items have text names sorted in descending order.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return True if the items are sorted in descending order; false otherwise.
+	 * @see #sleepInSecond(long)
+	 * @see #getListWebElement(String)
+	 * @author ThachNk
+	 */
+	protected boolean isAllItemHaveTextNameSortByDescending(String locatorType) {
+		sleepInSecond(3);
+		List<WebElement> elementLists = getListWebElement(locatorType);
+		List<String> names = elementLists.stream().map(n -> n.getText()).collect(Collectors.toList());
+		List<String> sortedNames = new ArrayList<String>(names);
+		Collections.sort(sortedNames);
+		Collections.reverse(sortedNames);
+		return names.equals(sortedNames);
+
+	}
+
+	/**
+	 * Checks if all items have prices sorted in ascending order.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return True if the items are sorted in ascending order; false otherwise.
+	 * @see #sleepInSecond(long)
+	 * @see #getListWebElement(String)
+	 * @author ThachNk
+	 */
+	protected boolean isAllItemHavePrice$SortByAscending(String locatorType) {
+		sleepInSecond(3);
+		List<WebElement> elementLists = getListWebElement(locatorType);
+		List<Float> names = elementLists.stream().map(n -> Float.valueOf(n.getText().replace(",", "").replace("$", ""))).collect(Collectors.toList());
+		List<Float> sortedNames = new ArrayList<Float>(names);
+		Collections.sort(sortedNames);
+		return names.equals(sortedNames);
+	}
+
+	/**
+	 * Checks if all items have prices sorted in descending order.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return True if the items are sorted in descending order; false otherwise.
+	 * @see #sleepInSecond(long)
+	 * @see #getListWebElement(String)
+	 * @author ThachNk
+	 */
+	protected boolean isAllItemHavePrice$SortByDescending(String locatorType) {
+		sleepInSecond(3);
+		List<WebElement> elementLists = getListWebElement(locatorType);
+		List<Float> names = elementLists.stream().map(n -> Float.valueOf(n.getText().replace(",", "").replace("$", ""))).collect(Collectors.toList());
+		List<Float> sortedNames = new ArrayList<Float>(names);
+		Collections.sort(sortedNames);
+		Collections.reverse(sortedNames);
+		return names.equals(sortedNames);
+	}
+
+	/**
+	 * Checks if all items have dates sorted in ascending order.
+	 *
+	 * @param locatorType The type of the locator (e.g., id, class, xpath).
+	 * @return True if the items are sorted in ascending order; false otherwise.
+	 * @see #sleepInSecond(long)
+	 * @see #getListWebElement(String)
+	 * @see #convertStringToDate(String)
+	 * @author ThachNk
+	 */
+	protected boolean isAllItemHaveDateSortByAscending(String locatorType) {
+		sleepInSecond(3);
+		List<WebElement> elementLists = getListWebElement(locatorType);
+		List<Date> dates = elementLists.stream().map(n -> convertStringToDate(n.getText())).collect(Collectors.toList());
+		List<Date> sortedDates = dates.stream().sorted().collect(Collectors.toList());
+		return dates.equals(sortedDates);
+	}
+
+	protected boolean isAllItemHaveDateSortByDescending(String locatorType) {
+		sleepInSecond(3);
+		List<WebElement> elementLists = getListWebElement(locatorType);
+		List<Date> dates = elementLists.stream().map(n -> convertStringToDate(n.getText())).collect(Collectors.toList());
+		List<Date> sortedDates = dates.stream().sorted((d1, d2) -> d2.compareTo(d1)).collect(Collectors.toList());
+		return dates.equals(sortedDates);
+	}
+
+	/**
+	 * Converts a date string to a {@code Date} object.
+	 *
+	 * @param dateInString The input date string to be converted.
+	 * @return A {@code Date} object representing the parsed date.
+	 * @throws IllegalArgumentException If the input date string is in an invalid format.
+	 * @author ThachNk
+	 */
+	private Date convertStringToDate(String dateInString) {
+		dateInString = dateInString.replace(",", "");
+		SimpleDateFormat formatter = new SimpleDateFormat("MMM dd yyyy");
+		Date date = null;
+		try {
+			date = formatter.parse(dateInString);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return date;
+	}
+
+	/**
+	 * Enter to dynamic textbox by id
+	 *
+	 * @author ThachNK
 	 * @param driver
-	 * @param textboxID
+	 * @param textBoxID
 	 * @param value
 	 */
-	public void inputToTextboxByID(WebDriver driver, String textboxID, String value) {
-		waitForElementVisible(driver, BasePageNopCommerceUI.DYNAMIC_TEXTBOX_BY_ID, textboxID);
-		sendkeyToElement(driver, BasePageNopCommerceUI.DYNAMIC_TEXTBOX_BY_ID, value, textboxID);
+	public void inPutToTextboxByID(String textBoxID, String value) {
+		waitForElementVisible(BasePageBankGuruUI.DYNAMIC_TEXTBOX_BY_ID, textBoxID);
+		senkeyToElement(BasePageBankGuruUI.DYNAMIC_TEXTBOX_BY_ID, value, textBoxID);
 	}
 
 	/**
 	 * Click to dynamic button by text
-	 * <ul>
-	 * <li>Rest Parameter</li>
-	 * <li>Button by text</li>
-	 * </ul>
-	 * 
-	 * @author nhungnth
+	 *
+	 * @author ThachNk
 	 * @param driver
 	 * @param buttonText
 	 */
-	public void clickToButtonByText(WebDriver driver, String buttonText) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.DYNAMIC_BUTTON_BY_TEXT, buttonText);
-		clickToElement(driver, BasePageNopCommerceUI.DYNAMIC_BUTTON_BY_TEXT, buttonText);
+	public void clickToButtonByText(String buttonText) {
+		waitForElementClickable(BasePageBankGuruUI.DYNAMIC_BUTTON_BY_TEXT, buttonText);
+		clickToElement(BasePageBankGuruUI.DYNAMIC_BUTTON_BY_TEXT, buttonText);
 	}
 
 	/**
-	 * Select item in dropdown by name
-	 * <ul>
-	 * <li>Rest Parameter</li>
-	 * <li>Dropdown attribute by name</li>
-	 * </ul>
-	 * 
-	 * @author nhungnth
+	 * Select item in dropdown by name atribute
+	 *
+	 * @author ThachNk
 	 * @param driver
-	 * @param dropdownAttributeName
+	 * @param dropdownAtributeName
+	 * @param itemValue
 	 */
-	public void selectToDropdownByName(WebDriver driver, String dropdownAttributeName, String itemValue) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.DYNAMIC_DROPDOWN_BY_NAME, dropdownAttributeName);
-		selectItemInDefaultDropdown(driver, BasePageNopCommerceUI.DYNAMIC_DROPDOWN_BY_NAME, itemValue, dropdownAttributeName);
+	public void selectToDropdownByName(String dropdownAtributeName, String itemValue) {
+		waitForElementClickable(BasePageBankGuruUI.DYNAMIC_DROPDOWN_BY_NAME, dropdownAtributeName);
+		selectItemInDefaultDropDown(BasePageBankGuruUI.DYNAMIC_DROPDOWN_BY_NAME, itemValue, dropdownAtributeName);
 	}
 
 	/**
-	 * Click to dynamic radio button by label name
-	 * <ul>
-	 * <li>Rest Parameter</li>
-	 * <li>Checkbox by label name</li>
-	 * </ul>
-	 * 
-	 * @author nhungnth
+	 * Click To dynamic radio button by label name
+	 *
+	 * @author ThachNk
 	 * @param driver
-	 * @param radioButtonLabelName
+	 * @param checkBoxLabelname
 	 */
-	public void clickToRadioButtonByLabel(WebDriver driver, String radioButtonLabelName) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.DYNAMIC_RADIO_BUTTON_BY_LABEL, radioButtonLabelName);
-		checkToDefaultCheckboxOrRadio(driver, BasePageNopCommerceUI.DYNAMIC_RADIO_BUTTON_BY_LABEL, radioButtonLabelName);
+	public void clickToRadioButtonByLabel(String checkBoxLabelname) {
+		waitForElementClickable(BasePageBankGuruUI.DYNAMIC_RADIO_BUTTON_BY_LABEL, checkBoxLabelname);
+		checkToDefaultCheckboxOrRadio(BasePageBankGuruUI.DYNAMIC_RADIO_BUTTON_BY_LABEL, checkBoxLabelname);
 	}
 
 	/**
-	 * Click to dynamic checkbox by label name
-	 * 
+	 * Click To dynamic checkbox by label name
+	 *
+	 * @author ThachNk
 	 * @param driver
-	 * @param checkboxLabelName
+	 * @param checkBoxLabelname
 	 */
-	public void clickToCheckboxByLabel(WebDriver driver, String checkboxLabelName) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.DYNAMIC_CHECKBOX_BY_LABEL, checkboxLabelName);
-		checkToDefaultCheckboxOrRadio(driver, BasePageNopCommerceUI.DYNAMIC_CHECKBOX_BY_LABEL, checkboxLabelName);
+	public void clickToCheckboxByLabel(String checkBoxLabelname) {
+		waitForElementClickable(BasePageBankGuruUI.DYNAMIC_CHECKBOX_BY_LABEL, checkBoxLabelname);
+		checkToDefaultCheckboxOrRadio(BasePageBankGuruUI.DYNAMIC_CHECKBOX_BY_LABEL, checkBoxLabelname);
 	}
 
 	/**
 	 * Get value in textbox by textboxID
-	 * 
+	 *
+	 * @author ThachNk
 	 * @param driver
 	 * @param textboxID
 	 * @return
 	 */
-	public String getTextboxValueByID(WebDriver driver, String textboxID) {
-		waitForElementVisible(driver, BasePageNopCommerceUI.DYNAMIC_TEXTBOX_BY_ID, textboxID);
-		return getElemnetAttribute(driver, BasePageNopCommerceUI.DYNAMIC_TEXTBOX_BY_ID, "value", textboxID);
+	public String getTextboxValueByID(String textboxID) {
+		waitForElementVisible(BasePageBankGuruUI.DYNAMIC_TEXTBOX_BY_ID, textboxID);
+		return getElementAttribute(BasePageBankGuruUI.DYNAMIC_TEXTBOX_BY_ID, "value", textboxID);
 	}
 
-	// Switch role Level_08_Switch_Role
-	public UserHomePageObject clickToLogoutLinkAtUserPage(WebDriver driver) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.LOGOUT_LINK_AT_USER_PAGE);
-		clickToElement(driver, BasePageNopCommerceUI.LOGOUT_LINK_AT_USER_PAGE);
-		return PageGeneratorManagerNopCommerce.getUserHomePage(driver);
+	public LoginPageObject openLoginPage() {
+		openPageUrl(BasePageBankGuruUI.LOGIN_LINK);
+		return PageGeneratorManager.getLoginPage(driver);
 	}
 
-	public AdminLoginPageObject clickToLogoutLinkAtAdminPage(WebDriver driver) {
-		waitForElementClickable(driver, BasePageNopCommerceUI.LOGOUT_LINK_AT_ADMIN_PAGE);
-		clickToElement(driver, BasePageNopCommerceUI.LOGOUT_LINK_AT_ADMIN_PAGE);
-		return PageGeneratorManagerNopCommerce.getAdminLoginPage(driver);
+	@Step("Open to MenuItem by text value is '{menuItem}'")
+	public void openMenuItemByText(String menuItem) {
+		waitForElementClickable(BasePageBankGuruUI.MENU_ITEM_BY_TEXT, menuItem);
+		clickToElement(BasePageBankGuruUI.MENU_ITEM_BY_TEXT, menuItem);
 	}
-
-	public UserHomePO openEndUserSite(WebDriver driver, String userUrl) {
-		openPageUrl(driver, userUrl);
-		return PageGeneratorManager.getUserHomePage(driver);
-	}
-
-	public AdminDashboardPO openAdminSite(WebDriver driver, String adminUrl) {
-		openPageUrl(driver, adminUrl);
-		return PageGeneratorManager.getAdminDashboardPage(driver);
-	}
-
-	private long longTimeout = GlobalConstants.LONG_TIME_OUT;
-	private long shortTimeout = GlobalConstants.SHORT_TIME_OUT;
 }

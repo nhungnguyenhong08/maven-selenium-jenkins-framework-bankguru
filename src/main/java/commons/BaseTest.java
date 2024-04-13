@@ -1,45 +1,163 @@
+
 package commons;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
+import org.openqa.selenium.opera.OperaDriver;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.BeforeSuite;
 
+import factoryEnvironment.BrowserstackFactory;
+import factoryEnvironment.GridFactory;
+import factoryEnvironment.LocalFactory;
+import factoryEnvironment.SaucelabFactory;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class BaseTest {
 	private WebDriver driver;
 
-	protected final Logger log;
-
 	@BeforeSuite
 	public void deleteFileInReport() {
-		// Remove all file in ReportNG screenshot (image)
-		deleteAllFileInFolder("reportNGImage");
+		deleteAllFileInFolder("target/allure-results");
+	}
 
-		// Remove all file in Allure attachment (json file)
-		deleteAllFileInFolder("allure-json");
+	protected WebDriver getBrowserDriverAll(String envName, String severName, String browserName, String ipAddress, String portNumber, String osName, String osVersion, String browserVersion) {
+		switch (envName) {
+		case "local":
+			driver = new LocalFactory(browserName).createDriver();
+			break;
+		case "grid":
+			driver = new GridFactory(browserName, ipAddress, portNumber).createDriver();
+			break;
+		case "browserStack":
+			driver = new BrowserstackFactory(browserName, osName, osVersion).createDriver();
+			break;
+		case "sauceLab":
+			driver = new SaucelabFactory(browserName, osName).createDriver();
+			break;
+		default:
+			driver = new LocalFactory(browserName).createDriver();
+			break;
+		}
+		driver.manage().timeouts().implicitlyWait(GlobalConstants.getGlobalConstants().getLongTimeOut(), TimeUnit.SECONDS);
+		driver.manage().window().maximize();
+		driver.get(severName);
+		return driver;
+	}
+
+	protected WebDriver getBrowserDriver(String browserName, String appUrl) {
+		if (browserName.equals("firefox")) {
+			WebDriverManager.firefoxdriver().setup();
+			driver = new FirefoxDriver();
+		} else if (browserName.equals("h_firefox")) {
+			WebDriverManager.firefoxdriver().setup();
+			FirefoxOptions options = new FirefoxOptions();
+			options.addArguments("--headless");
+			options.addArguments("window-size=1366x768");
+			driver = new FirefoxDriver(options);
+		} else if (browserName.equals("chrome")) {
+			WebDriverManager.chromedriver().setup();
+			driver = new ChromeDriver();
+		} else if (browserName.equals("h_chrome")) {
+			WebDriverManager.chromedriver().setup();
+			ChromeOptions options = new ChromeOptions();
+			options.addArguments("--headless");
+			options.addArguments("window-size=1366x768");
+			driver = new ChromeDriver(options);
+		} else if (browserName.equals("edge")) {
+			WebDriverManager.edgedriver().setup();
+			driver = new EdgeDriver();
+		} else if (browserName.equals("ie")) {
+			WebDriverManager.iedriver().arch32().setup();
+			driver = new InternetExplorerDriver();
+		} else if (browserName.equals("opera")) {
+			WebDriverManager.operadriver().setup();
+			driver = new OperaDriver();
+		} else if (browserName.equals("coccoc")) {
+			WebDriverManager.chromedriver().driverVersion("115.0.5790.102").setup();
+			ChromeOptions options = new ChromeOptions();
+			options.setBinary("C:\\Program Files\\CocCoc\\Browser\\Application\\browser.exe");
+			driver = new ChromeDriver(options);
+		} else {
+			throw new RuntimeException("Browser name invalid");
+		}
+
+		driver.get(appUrl);
+		driver.manage().timeouts().implicitlyWait(GlobalConstants.getGlobalConstants().getLongTimeOut(), TimeUnit.SECONDS);
+		return driver;
+	}
+
+	public WebDriver getDriverInstance() {
+		return this.driver;
+	}
+
+	public static long getRandomNumberByDateTime() {
+		return Calendar.getInstance().getTimeInMillis() % 100000;
+	}
+
+	protected boolean verifyTrue(boolean condition) {
+		boolean pass = true;
+		try {
+			Assert.assertTrue(condition);
+			System.out.println(" -------------------------- PASSED -------------------------- ");
+		} catch (Throwable e) {
+			System.out.println(" -------------------------- FAILED -------------------------- ");
+			pass = false;
+			VerificationFailures.getFailures().addFailureForTest(Reporter.getCurrentTestResult(), e);
+			Reporter.getCurrentTestResult().setThrowable(e);
+		}
+		return pass;
+	}
+
+	protected boolean verifyFalse(boolean condition) {
+		boolean pass = true;
+		try {
+			Assert.assertFalse(condition);
+			System.out.println(" -------------------------- PASSED -------------------------- ");
+		} catch (Throwable e) {
+			System.out.println(" -------------------------- FAILED -------------------------- ");
+			pass = false;
+			VerificationFailures.getFailures().addFailureForTest(Reporter.getCurrentTestResult(), e);
+			Reporter.getCurrentTestResult().setThrowable(e);
+		}
+		return pass;
+	}
+
+	protected boolean verifyEquals(Object actual, Object expected) {
+		boolean pass = true;
+		try {
+			Assert.assertEquals(actual, expected);
+			System.out.println(" -------------------------- PASSED -------------------------- ");
+		} catch (Throwable e) {
+			pass = false;
+			System.out.println(" -------------------------- FAILED -------------------------- ");
+			VerificationFailures.getFailures().addFailureForTest(Reporter.getCurrentTestResult(), e);
+			Reporter.getCurrentTestResult().setThrowable(e);
+		}
+		return pass;
 	}
 
 	public void deleteAllFileInFolder(String folderName) {
 		try {
-			String pathFolderDownload = GlobalConstants.PROJECT_PATH + File.separator + folderName;
+			String pathFolderDownload = GlobalConstants.getGlobalConstants().getProjectPath() + File.separator + folderName;
 			File file = new File(pathFolderDownload);
 			File[] listOfFiles = file.listFiles();
 			if (listOfFiles.length != 0) {
@@ -54,212 +172,14 @@ public class BaseTest {
 		}
 	}
 
-	public BaseTest() {
-		log = LogManager.getLogger(getClass());
-	}
-
-	protected WebDriver getBrowserDriver(String browserName) {
-		BrowserList browserList = BrowserList.valueOf(browserName.toUpperCase());
-		switch (browserList) {
-		case CHROME:
-			WebDriverManager.chromedriver().setup();
-			ChromeOptions options1 = new ChromeOptions();
-			options1.setAcceptInsecureCerts(true);
-			driver = new ChromeDriver(options1);
-			break;
-		case FIREFOX:
-			WebDriverManager.firefoxdriver().setup();
-			// Add extention to Firefox
-			FirefoxProfile profile = new FirefoxProfile();
-			File translate = new File(GlobalConstants.PROJECT_PATH + "\\browserExtensions\\to_google_translate-4.2.0.xpi");
-			profile.addExtension(translate);
-			profile.setAcceptUntrustedCertificates(true);
-			profile.setAssumeUntrustedCertificateIssuer(false);
-			FirefoxOptions options2 = new FirefoxOptions();
-			options2.setProfile(profile);
-
-			driver = new FirefoxDriver(options2);
-			break;
-		case EDGE:
-			driver = WebDriverManager.edgedriver().create();
-			break;
-		case OPERA:
-			driver = WebDriverManager.operadriver().create();
-			break;
-		case COCCOC:
-			// Cốc cốc browser trừ đi 5-6 version ra chromdriver (lấy version của trình duyệt cốc cốc - 5/6)
-			WebDriverManager.chromedriver().driverVersion("114.0.5735.90").setup();
-			ChromeOptions options = new ChromeOptions();
-
-			if (GlobalConstants.OS_NAME.startsWith("Windows")) {
-				options.setBinary("C:\\Program Files\\CocCoc\\Browser\\Application\\browser.exe");
-
-			} else {
-				options.setBinary("...");
-			}
-			driver = new ChromeDriver(options);
-			break;
-		default:
-			throw new RuntimeException("Please enter the correct Browser name");
-		}
-		driver.manage().timeouts().implicitlyWait(GlobalConstants.LONG_TIME_OUT, TimeUnit.SECONDS);
-		driver.get(GlobalConstants.PORTAL_PAGE_URL);
-		return driver;
-	}
-
-	protected WebDriver getBrowserDriver(String browserName, String appUrl) {
-		BrowserList browserList = BrowserList.valueOf(browserName.toUpperCase());
-		switch (browserList) {
-		case CHROME:
-			WebDriverManager.chromedriver().setup();
-			File file = new File(GlobalConstants.PROJECT_PATH + "\\browserExtensions\\Google-Dịch.crx");
-			ChromeOptions options = new ChromeOptions();
-			options.addExtensions(file);
-			options.setAcceptInsecureCerts(true);
-			driver = new ChromeDriver(options);
-			break;
-		case H_CHROME:
-			WebDriverManager.chromedriver().setup();
-			ChromeOptions options1 = new ChromeOptions();
-			options1.addArguments("--headless");
-			options1.addArguments("window-size=1920x1080");
-			driver = new ChromeDriver(options1);
-			break;
-		case FIREFOX:
-			WebDriverManager.firefoxdriver().setup();
-
-			// Add extention to Firefox
-			FirefoxProfile profile = new FirefoxProfile();
-			File translate = new File(GlobalConstants.PROJECT_PATH + "\\browserExtensions\\to_google_translate-4.2.0.xpi");
-			profile.addExtension(translate);
-			profile.setAcceptUntrustedCertificates(true);
-			profile.setAssumeUntrustedCertificateIssuer(false);
-			FirefoxOptions options4 = new FirefoxOptions();
-			options4.setProfile(profile);
-
-			driver = new FirefoxDriver(options4);
-			break;
-		case H_FIREFOX:
-			WebDriverManager.chromedriver().setup();
-			FirefoxOptions options2 = new FirefoxOptions();
-			options2.addArguments("--headless");
-			options2.addArguments("window-size=1920x1080");
-			driver = new FirefoxDriver(options2);
-			break;
-		case EDGE:
-			driver = WebDriverManager.edgedriver().create();
-			break;
-		case OPERA:
-			driver = WebDriverManager.operadriver().create();
-			break;
-		case COCCOC:
-			// Cốc cốc browser trừ đi 5-6 version ra chromdriver (lấy version của trình duyệt cốc cốc - 5/6)
-			WebDriverManager.chromedriver().driverVersion("114.0.5735.90").setup();
-			ChromeOptions options3 = new ChromeOptions();
-
-			if (GlobalConstants.OS_NAME.startsWith("Windows")) {
-				options3.setBinary("C:\\Program Files\\CocCoc\\Browser\\Application\\browser.exe");
-
-			} else {
-				options3.setBinary("...");
-			}
-			driver = new ChromeDriver(options3);
-			break;
-		default:
-			throw new RuntimeException("Please enter the correct Browser name");
-		}
-		driver.manage().timeouts().implicitlyWait(GlobalConstants.LONG_TIME_OUT, TimeUnit.SECONDS);
-		driver.get(appUrl);
-		return driver;
-	}
-
-	public WebDriver getDriver() {
-		return this.driver;
-	}
-
-	protected String getEnvironmentUrl(String environmentName) {
-		String envUrl = null;
-		EnvironmentList environment = EnvironmentList.valueOf(environmentName.toUpperCase());
-		switch (environment) {
-		case DEV:
-			envUrl = "https://demo.nopcommerce.com/";
-			break;
-		case TESTTING:
-			envUrl = "https://demo.nopcommerce.com/";
-			break;
-		case STAGING:
-			envUrl = "https://demo.nopcommerce.com/";
-			break;
-		case PRODUCTION:
-			envUrl = "https://demo.nopcommerce.com/";
-			break;
-		default:
-			throw new RuntimeException("Please enter the correct Environment name");
-		}
-		return envUrl;
-	}
-
-	protected int generateFakeNumber() {
-		Random rand = new Random();
-		return rand.nextInt(9999);
-
-	}
-
-	protected boolean verifyTrue(boolean condition) {
-		boolean pass = true;
-		try {
-			if (condition == true) {
-				log.info(" -------------------------- PASSED -------------------------- ");
-			} else {
-				log.info(" -------------------------- FAILED -------------------------- ");
-			}
-			Assert.assertTrue(condition);
-		} catch (Throwable e) {
-			pass = false;
-
-			// Add lỗi vào ReportNGListener
-			VerificationFailures.getFailures().addFailureForTest(Reporter.getCurrentTestResult(), e);
-			Reporter.getCurrentTestResult().setThrowable(e);
-		}
-		return pass;
-	}
-
-	protected boolean verifyFalse(boolean condition) {
-		boolean pass = true;
-		try {
-			Assert.assertFalse(condition);
-			log.info(" -------------------------- PASSED -------------------------- ");
-		} catch (Throwable e) {
-			log.info(" -------------------------- FAILED -------------------------- ");
-			pass = false;
-			VerificationFailures.getFailures().addFailureForTest(Reporter.getCurrentTestResult(), e);
-			Reporter.getCurrentTestResult().setThrowable(e);
-		}
-		return pass;
-	}
-
-	protected boolean verifyEquals(Object actual, Object expected) {
-		boolean pass = true;
-		try {
-			Assert.assertEquals(actual, expected);
-			log.info(" -------------------------- PASSED -------------------------- ");
-		} catch (Throwable e) {
-			pass = false;
-			log.info(" -------------------------- FAILED -------------------------- ");
-			VerificationFailures.getFailures().addFailureForTest(Reporter.getCurrentTestResult(), e);
-			Reporter.getCurrentTestResult().setThrowable(e);
-		}
-		return pass;
-	}
-
 	protected void closeBrowserDriver() {
 		String cmd = null;
 		try {
 			String osName = System.getProperty("os.name").toLowerCase();
-			log.info("OS name = " + osName);
+			System.out.println("OS name = " + osName);
 
 			String driverInstanceName = driver.toString().toLowerCase();
-			log.info("Driver instance name = " + driverInstanceName);
+			System.out.println("Driver instance name = " + driverInstanceName);
 
 			String browserDriverName = null;
 
@@ -288,7 +208,7 @@ public class BaseTest {
 				driver.quit();
 			}
 		} catch (Exception e) {
-			log.info(e.getMessage());
+			System.out.println(e.getMessage());
 		} finally {
 			try {
 				Process process = Runtime.getRuntime().exec(cmd);
@@ -301,8 +221,8 @@ public class BaseTest {
 		}
 	}
 
-	protected String getCurrentDate() {
-		DateTime nowUTC = new DateTime();
+	private String getCurrentDate() {
+		DateTime nowUTC = new DateTime(DateTimeZone.getDefault());
 		int day = nowUTC.getDayOfMonth();
 		if (day < 10) {
 			String dayValue = "0" + day;
@@ -311,8 +231,8 @@ public class BaseTest {
 		return String.valueOf(day);
 	}
 
-	protected String getCurrentMonth() {
-		DateTime now = new DateTime();
+	private String getCurrentMonth() {
+		DateTime now = new DateTime(DateTimeZone.getDefault());
 		int month = now.getMonthOfYear();
 		if (month < 10) {
 			String monthValue = "0" + month;
@@ -321,21 +241,60 @@ public class BaseTest {
 		return String.valueOf(month);
 	}
 
-	protected String getCurrentYear() {
-		DateTime now = new DateTime();
-		return now.getYear() + "";
+	private String getCurrentYear() {
+		DateTime now = new DateTime(DateTimeZone.getDefault());
+		return String.valueOf(now.getYear());
 	}
 
 	protected String getCurrentDay() {
 		return getCurrentDate() + "/" + getCurrentMonth() + "/" + getCurrentYear();
 	}
 
+	protected String getCurrentDateFormatted() {
+		LocalDate currentDate = LocalDate.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy");
+		return currentDate.format(formatter);
+	}
+
+	protected String getYesterdayFormatted() {
+		LocalDate yesterday = LocalDate.now().minusDays(1);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy");
+		return yesterday.format(formatter);
+	}
+
+	/**
+	 * Converts a string from the format "aa/bb/cccc" to "cccc-aa-bb".
+	 *
+	 * @param input The input string to be converted
+	 * @return The converted string or an error message if the input is invalid
+	 */
+	protected String changeFormartDate(String dateInput, String formatType) {
+		String[] parts = dateInput.split("/");
+
+		if (parts.length == 3) {
+			String yyyy = parts[2];
+			String dd = parts[0];
+			String MM = parts[1];
+
+			if ("yyyy-dd-MM".equals(formatType))
+				return yyyy + "-" + dd + "-" + MM;
+			else if ("yyyy-MM-dd".equals(formatType))
+				return yyyy + "-" + MM + "-" + dd;
+			else
+				return "Invalid formatType";
+		} else {
+			return "Invalid input format";
+		}
+	}
+
 	protected void showBrowserConsoleLogs(WebDriver driver) {
-		if (driver.toString().contains("chrome")) {
+		if (driver.toString().contains("chrome") || driver.toString().contains("edge")) {
 			LogEntries logs = driver.manage().logs().get("browser");
 			List<LogEntry> logList = logs.getAll();
 			for (LogEntry logging : logList) {
-				log.info(" --------------- " + logging.getLevel().toString() + " ------------- \n" + logging.getMessage());
+				if (logging.getLevel().toString().toLowerCase().contains("error")) {
+					System.out.println("------------------" + logging.getLevel().toString() + "------------------- \n" + logging.getMessage());
+				}
 			}
 		}
 	}

@@ -19,7 +19,7 @@ public class ExtentTestListener extends BaseTest implements ITestListener {
 
 	@Override
 	public void onStart(ITestContext iTestContext) {
-		iTestContext.setAttribute("WebDriver", this.getDriver());
+		iTestContext.setAttribute("WebDriver", this.getDriverInstance());
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class ExtentTestListener extends BaseTest implements ITestListener {
 	@Override
 	public void onTestFailure(ITestResult iTestResult) {
 		Object testClass = iTestResult.getInstance();
-		WebDriver driver = ((BaseTest) testClass).getDriver();
+		WebDriver driver = ((BaseTest) testClass).getDriverInstance();
 
 		String base64Screenshot = "data:image/png;base64," + ((TakesScreenshot) driver).getScreenshotAs(OutputType.BASE64);
 		getTest().log(Status.FAIL, "Screenshot and Exception", iTestResult.getThrowable(), getTest().addScreenCaptureFromBase64String(base64Screenshot).getModel().getMedia().get(0));
